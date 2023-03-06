@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Signup</title>
+    <style>
+      .button-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 10px;
+      }
+      .button-container button {
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="button-container">
+      <button type="button"><a href="pageLogin.html">Page Connexion</a></button>
+      <button type="button"><a href="pageSignup.html">Page Inscription</a></button>
+    </div>
+    <form id="signupForm" method="post" action="http://localhost:3000/api/auth/signup" enctype="application/json">
+      <label for="pseudo">Pseudo:</label>
+      <input type="text" id="pseudo" name="pseudo" required><br><br>
+      <label for="login">Identifiant:</label>
+      <input type="text" id="login" name="login" required><br><br>
+      <label for="password">Mot de Passe:</label>
+      <input type="password" id="password" name="password" required><br><br>
+      <input type="submit" value="Creer">
+    </form>
+    <script>
+      const form = document.getElementById('signupForm');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const jsonData = Object.fromEntries(formData.entries());
+        fetch('http://localhost:3000/api/auth/signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'User created successfully') {
+                    console.log('Signup successful')
+                } else {
+                    console.log('Signup failed')
+                }
+            })
+            .catch(error => console.error('Error:', error));
+      });
+    </script>
+  </body>
+</html>

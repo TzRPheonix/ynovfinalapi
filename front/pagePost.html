@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Vos postes</title>
+  </head>
+  <body>
+    <h1>Vos postes</h1>
+    <div id="posts-container"></div>
+    <h2>Creer un nouveau post</h2>
+    <form>
+      <label for="post-title">Titre:</label><br>
+      <input type="text" id="post-title" name="post-title"><br>
+      <label for="post-content">Contenu:</label><br>
+      <textarea id="post-content" name="post-content"></textarea><br><br>
+      <input type="submit" value="Creer un Post">
+    </form>
+
+    <script>
+        const queryParams = new URLSearchParams(window.location.search);
+        const userId = queryParams.get('userId');
+        console.log(userId)
+      
+      fetch(`http://localhost:3000/api/postService/displayPost?userId=${userId}`)
+        .then(response => response.json())
+        .then(posts => {
+          const postsContainer = document.getElementById('posts-container');
+          posts.forEach(post => {
+            const postDiv = document.createElement('div');
+            const title = document.createElement('h3');
+            const content = document.createElement('p');
+            title.textContent = post.titre;
+            content.textContent = post.contenuPost;
+            postDiv.appendChild(title);
+            postDiv.appendChild(content);
+            postsContainer.appendChild(postDiv);
+          });
+        });
+
+      const form = document.querySelector('form');
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const title = document.getElementById('post-title').value;
+        const content = document.getElementById('post-content').value;
+        fetch('http://localhost:3000/api/post', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ titre: title, contenuPost: content })
+        })
+        .then(response => response.json())
+        .then(result => {
+          alert(result.message);
+          form.reset();
+          const postsContainer = document.getElementById('posts-container');
+          postsContainer.innerHTML = '';
+          fetch(`http://localhost:3000/api/postService/displayPost?userId=${userId}`)
+            .then(response => response.json())
+            .then(posts => {
+              posts.forEach(post => {
+                const postDiv = document.createElement('div');
+                const title = document.createElement('h3');
+                const content = document.createElement('p');
+                title.textContent = post.titre;
+                content.textContent = post.contenuPost;
+                postDiv.appendChild(title);
+                postDiv.appendChild(content);
+                postsContainer.appendChild(postDiv);
+              });
+            });
+        })
+        .catch(error => {
+          alert('An error occurred while creating the post.');
+          console.error(error);
+        });
+      });
+    </script>
+  </body>
+</html>

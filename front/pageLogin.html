@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+      <style>
+      .button-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 10px;
+      }
+      .button-container button {
+        margin-left: 10px;
+      }
+    </style>
+</head>
+<body>
+  <div class="button-container">
+    <button type="button"><a href="pageLogin.html">Page Connexion</a></button>
+    <button type="button"><a href="pageSignup.html">Page Inscription</a></button>
+  </div>
+  <form id="loginForm" method="post">
+    <label for="login">Pseudo:</label>
+    <input type="text" id="login" name="login"><br><br>
+    <label for="password">Mot de Passe:</label>
+    <input type="password" id="password" name="password"><br><br>
+    <input type="submit" value="Connexion">
+  </form>
+  <script>
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const jsonData = Object.fromEntries(formData.entries());
+      fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(jsonData)
+      })
+          .then(response => response.json())
+          .then(data => {
+              if (data.message === 'User login successfully') {
+                window.location.href = `/ynovfinalapi/front/pagePost.html?userId=${data.idUser}`;
+              } else {
+                function myFunction() {
+                  alert("Identifiant incorrecte");
+                }      
+              }
+          })
+          .catch(error => console.error('Error:', error));
+    });
+  </script>
+</body>
+</html>
